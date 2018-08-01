@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:dynamic-logger-controller="http://www.mulesoft.org/schema/mule/dynamic-logger-controller" xmlns:json="http://www.mulesoft.org/schema/mule/json"
+	xmlns:dynamic-log-level="http://www.mulesoft.org/schema/mule/dynamic-log-level" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:spring="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.mulesoft.org/schema/mule/dynamic-log-level http://www.mulesoft.org/schema/mule/dynamic-log-level/current/mule-dynamic-log-level.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/dynamic-logger-controller http://www.mulesoft.org/schema/mule/dynamic-logger-controller/current/mule-dynamic-logger-controller.xsd">
+	<http:listener-config name="api-httpListenerConfig" host="0.0.0.0" port="8081" doc:name="HTTP Listener Configuration" />
+	<apikit:config name="api-config" raml="api.raml" consoleEnabled="false" doc:name="Router" />
+	<http:request-config name="HTTP_Request_Configuration" host="#[payload.connection.domain]" port="#[payload.connection.port]" basePath="#[payload.connection.basePath]"
+		doc:name="HTTP Request Configuration" />
+	<flow name="api-main">
+		<http:listener config-ref="api-httpListenerConfig" path="/api/*" doc:name="HTTP" />
+		<apikit:router config-ref="api-config" doc:name="APIkit Router" />
+		<exception-strategy ref="global-exception-strategy" doc:name="Reference Exception Strategy" />
+	</flow>
+	<flow name="api-console">
+		<http:listener config-ref="api-httpListenerConfig" path="/console/*" doc:name="HTTP" />
+		<apikit:console config-ref="api-config" doc:name="APIkit Console" />
+	</flow>
+	<flow name="put:/loggers:application/json:api-config">
+		<dw:transform-message doc:name="JSON To Java">
+			<dw:set-payload resource="classpath:dataweave/Json-To-Java.dwl" />
+		</dw:transform-message>
+		<set-variable variableName="responseList" value="#[[]]" mimeType="application/java" doc:name="Response List" />
+		<foreach doc:name="For Each">
+			<set-variable variableName="appName" value="#[payload.application]" doc:name="Set App Name" />
+			<logger message="Updating loggers for app #[flowVars.appName]" level="INFO" doc:name="Log AppName" />
+			<foreach collection="#[payload.loggers]" doc:name="For Each">
+				<message-properties-transformer scope="invocation" mimeType="application/java" doc:name="Set Vars">
+					<add-message-property key="logName" value="#[payload.name]" />
+					<add-message-property key="level" value="#[payload.level]" />
+				</message-properties-transformer>
+				<flow-ref name="update-log-level-flow" doc:name="update-log-level-flow" />
+				<expression-transformer mimeType="application/java" expression="#[flowVars.responseList.add(payload)]" doc:name="Expression" />
+			</foreach>
+		</foreach>
+		<set-payload value="#[flowVars.responseList]" doc:name="Set Payload" />
+		<logger message="#[flowVars.result]" level="INFO" doc:name="Logger" />
+	</flow>
+	<flow name="put:/loggers/{appName}:application/json:api-config">
+		<dw:transform-message doc:name="JSON To Java">
+			<dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+payload]]></dw:set-payload>
+		</dw:transform-message>
+		<set-variable variableName="result" value="#[[]]" mimeType="application/java" doc:name="Create Result List" />
+		<logger message="Updating logger for App #[flowVars.appName]" level="INFO" doc:name="Log App Name" />
+		<set-payload value="#[payload.loggers]" mimeType="application/java" doc:name="Set Loggers" />
+		<foreach doc:name="For Each">
+			<message-properties-transformer scope="invocation" mimeType="application/java" doc:name="Set Vars">
+				<add-message-property key="logName" value="#[payload.name]" />
+				<add-message-property key="level" value="#[payload.level]" />
+			</message-properties-transformer>
+			<flow-ref name="update-log-level-flow" doc:name="update-log-level-flow" />
+			<expression-transformer expression="#[flowVars.result.add(payload)]" doc:name="Add Result To result" />
+		</foreach>
+		<dw:transform-message doc:name="FInal Response">
+			<dw:set-payload resource="classpath:dataweave/final-response.dwl" />
+		</dw:transform-message>
+	</flow>
+	<flow name="get:/loggers:api-config">
+		<logger message="Fetching All Loggers on JVM" level="INFO" doc:name="Log List All Loggers" />
+        <dynamic-logger-controller:list-all-log doc:name="List all log"/>
+		<set-variable variableName="host" value="#[server.host]" doc:name="Set Host Name" />
+		<dw:transform-message doc:name="GroupBy App Name">
+			<dw:set-payload resource="classpath:dataweave/groupBy-appName.dwl" />
+		</dw:transform-message>
+	</flow>
+	<flow name="get:/loggers/{appName}:api-config">
+		<logger message="Finding Loggers for App Name #[flowVars.appName]" level="INFO" doc:name="Log App Name" />
+		<dynamic-logger-controller:list-logs-by-app-name appName="#[flowVars.appName]" doc:name="find Logs By AppName" />
+		<set-variable variableName="host" value="#[server.host]" doc:name="Set Host Name" />
+		<dw:transform-message doc:name="GroupBy App Name">
+			<dw:set-payload resource="classpath:dataweave/groupBy-appName.dwl" />
+		</dw:transform-message>
+	</flow>
+	<flow name="update-log-level-flow">
+		<logger message="Updaing logger #[flowVars.logName], level #[flowVars.level]" level="INFO" doc:name="Log Update Keys" />
+		<dynamic-logger-controller:update-log-level appName="#[flowVars.appName]" level="#[flowVars.level]" loggerName="#[flowVars.logName]"
+			doc:name="Update Log Level" />
+		<dw:transform-message doc:name="Success Response">
+			<dw:set-payload resource="classpath:dataweave/update-success-response.dwl" />
+		</dw:transform-message>
+		<catch-exception-strategy doc:name="Catch Exception Strategy">
+			<logger message="Error in updating logLevel #[exception.getCause()]" level="INFO" doc:name="Log Error" />
+			<set-variable variableName="errorMessage" value="#[exception.cause.message]" doc:name="Set Error Message" />
+			<dw:transform-message doc:name="Transform Message">
+				<dw:set-payload resource="classpath:dataweave/update-failure-response.dwl" />
+			</dw:transform-message>
+		</catch-exception-strategy>
+	</flow>
+</mule>

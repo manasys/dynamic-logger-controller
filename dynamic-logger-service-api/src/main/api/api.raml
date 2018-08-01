@@ -1,0 +1,62 @@
+#%RAML 1.0
+title: Dynamic Log Level Update
+version: 1.0
+mediaType: [application/json]
+baseUri: http://localhost:8081
+types:
+  LoggerType: !include types/LogLevelType.raml
+
+/loggers:
+    get:
+      description: |
+        Retrieve resource
+      responses:
+        200:
+          description: |
+            Succesfully retrieved resource
+          body:
+            application/json:
+              type: LoggerType []
+              example: !include Array-Example.json
+    put:
+      description: |
+        Update log levels for application in given collection
+      body:
+        application/json:
+          type: LoggerType []
+          example: !include Array-Example.json
+
+      responses:
+        200:
+          description: |
+            Succesfully updated the resource
+          body: 
+            application/json:  
+    /{appName}:
+      uriParameters:
+        appName:
+          description: application name to update log level
+      get:
+        description: |
+          Given App log info
+        responses:
+          200:
+            body:
+              application/json:
+                type: LoggerType
+                example: !include LogLevelExample.raml
+
+
+      put:
+        description: |
+          Update specific log level for given application name
+        body:
+          application/json:
+            type: LoggerType
+            example: !include LogLevelExample.raml
+        responses:
+          200:
+            body:
+              application/json:
+                type: LoggerType
+                example: !include LogLevelExample.raml
