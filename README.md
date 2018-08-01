@@ -1,6 +1,6 @@
 # Dynamic Logger Controller
 
-Dynamic logger controller provide an interface to update logger level for given application dynamically without redeploying application or making any edits on the server in log4j.xml
+Dynamic logger controller provides an interface to update logger level for given application dynamically without redeploying application or making any edits on the server in log4j.xml
 
 This project contains two components:
 
