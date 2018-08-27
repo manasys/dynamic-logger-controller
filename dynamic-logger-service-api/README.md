@@ -8,7 +8,7 @@ To access console, please visit http://localhost:8081/console/
 To access web-admin, please visit http://localhost:8081/admin/
 
 
-![Alt Text] (https://github.com/mulesoft-consulting/dynamic-logger-controller/blob/master/dynamic-logger-service-api/change-log-level.gif)
+![](https://github.com/mulesoft-consulting/dynamic-logger-controller/blob/master/dynamic-logger-service-api/change-log-level.gif)
 
 
  
