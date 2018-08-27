@@ -14,3 +14,8 @@ This repository consists on the following folders:
 * `dynamic-logger-service-api` API specifications to fetch all apps on the JVM where this API is deployed
 
 Please read the individual README files found on each folder to get more details on how to use each artifact.
+
+To access web-admin, please visit http://localhost:8081/admin/
+
+
+![](https://github.com/mulesoft-consulting/dynamic-logger-controller/blob/master/dynamic-logger-service-api/change-log-level.gif)

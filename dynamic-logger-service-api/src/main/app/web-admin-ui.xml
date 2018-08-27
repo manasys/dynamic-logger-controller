@@ -12,6 +12,6 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 				<wildcard-filter pattern="/favicon.ico" caseSensitive="true" />
 			</not-filter>
 		</message-filter>
-		<http:static-resource-handler resourceBase="src/main/resources/webapp" defaultFile="index.html" doc:name="HTTP Static Resource Handler" />
+		<http:static-resource-handler resourceBase="${app.home}/webapp" defaultFile="index.html" doc:name="HTTP Static Resource Handler" />
 	</flow>
 </mule>
