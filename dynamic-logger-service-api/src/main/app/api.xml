@@ -30,7 +30,7 @@ http://www.mulesoft.org/schema/mule/dynamic-logger-controller http://www.mulesof
 		</dw:transform-message>
 		<set-variable variableName="responseList" value="#[[]]" mimeType="application/java" doc:name="Response List" />
 		<foreach doc:name="For Each">
-			<set-variable variableName="appName" value="#[payload.application]" doc:name="Set App Name" />
+			<set-variable variableName="appName" value="#[payload.appName]" doc:name="Set App Name" />
 			<logger message="Updating loggers for app #[flowVars.appName]" level="INFO" doc:name="Log AppName" />
 			<foreach collection="#[payload.loggers]" doc:name="For Each">
 				<message-properties-transformer scope="invocation" mimeType="application/java" doc:name="Set Vars">
@@ -53,7 +53,6 @@ payload]]></dw:set-payload>
 		</dw:transform-message>
 		<set-variable variableName="result" value="#[[]]" mimeType="application/java" doc:name="Create Result List" />
 		<logger message="Updating logger for App #[flowVars.appName]" level="INFO" doc:name="Log App Name" />
-		<set-payload value="#[payload.loggers]" mimeType="application/java" doc:name="Set Loggers" />
 		<foreach doc:name="For Each">
 			<message-properties-transformer scope="invocation" mimeType="application/java" doc:name="Set Vars">
 				<add-message-property key="logName" value="#[payload.name]" />
@@ -62,15 +61,12 @@ payload]]></dw:set-payload>
 			<flow-ref name="update-log-level-flow" doc:name="update-log-level-flow" />
 			<expression-transformer expression="#[flowVars.result.add(payload)]" doc:name="Add Result To result" />
 		</foreach>
-		<dw:transform-message doc:name="FInal Response">
-			<dw:set-payload resource="classpath:dataweave/final-response.dwl" />
-		</dw:transform-message>
 	</flow>
 	<flow name="get:/loggers:api-config">
 		<logger message="Fetching All Loggers on JVM" level="INFO" doc:name="Log List All Loggers" />
-        <dynamic-logger-controller:list-all-log doc:name="List all log"/>
+        <dynamic-logger-controller:list-all-logs doc:name="List All Logs"/>
 		<set-variable variableName="host" value="#[server.host]" doc:name="Set Host Name" />
-		<dw:transform-message doc:name="GroupBy App Name">
+		<dw:transform-message doc:name="Response">
 			<dw:set-payload resource="classpath:dataweave/groupBy-appName.dwl" />
 		</dw:transform-message>
 	</flow>
@@ -78,7 +74,7 @@ payload]]></dw:set-payload>
 		<logger message="Finding Loggers for App Name #[flowVars.appName]" level="INFO" doc:name="Log App Name" />
 		<dynamic-logger-controller:list-logs-by-app-name appName="#[flowVars.appName]" doc:name="find Logs By AppName" />
 		<set-variable variableName="host" value="#[server.host]" doc:name="Set Host Name" />
-		<dw:transform-message doc:name="GroupBy App Name">
+		<dw:transform-message doc:name="Response">
 			<dw:set-payload resource="classpath:dataweave/groupBy-appName.dwl" />
 		</dw:transform-message>
 	</flow>

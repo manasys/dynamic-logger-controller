@@ -1,13 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-  <classpathentry kind="src" path="src/main/api" excluding="**/*.java"/>
-  <classpathentry kind="src" path="src/main/app" excluding="**/*.java"/>
-  <classpathentry kind="src" path="src/main/java"/>
-  <classpathentry kind="src" path="src/main/resources" excluding="**/*.java"/>
-  <classpathentry kind="src" path="src/test/java" output="target/test-classes"/>
-  <classpathentry kind="src" path="src/test/resources" output="target/test-classes" excluding="**/*.java"/>
-  <classpathentry kind="output" path="target/classes"/>
-  <classpathentry kind="con" path="MULE_RUNTIME"/>
-  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-  <classpathentry kind="var" path="M2_REPO/org/mule/modules/dynamic-logger-connector/1.0.0-SNAPSHOT/dynamic-logger-connector-1.0.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/mule/modules/dynamic-logger-connector/1.0.0-SNAPSHOT/dynamic-logger-connector-1.0.0-SNAPSHOT-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/mule/tools/devkit/mule-devkit-shade/3.9.0/mule-devkit-shade-3.9.0.jar"/>
+	<classpathentry excluding="**/*.java" kind="src" path="src/main/api"/>
+	<classpathentry excluding="**/*.java" kind="src" path="src/main/app"/>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry excluding="**/*.java" kind="src" path="src/main/resources"/>
+	<classpathentry kind="src" output="target/test-classes" path="src/test/java"/>
+	<classpathentry excluding="**/*.java" kind="src" output="target/test-classes" path="src/test/resources"/>
+	<classpathentry kind="con" path="MULE_RUNTIME"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.launching.macosx.MacOSXType/Java SE 8 [1.8.0_111]"/>
+	<classpathentry kind="var" path="M2_REPO/org/mule/modules/dynamic-logger-connector/1.0.0-SNAPSHOT/dynamic-logger-connector-1.0.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/mule/modules/dynamic-logger-connector/1.0.0-SNAPSHOT/dynamic-logger-connector-1.0.0-SNAPSHOT-sources.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/mule/tools/devkit/mule-devkit-shade/3.9.0/mule-devkit-shade-3.9.0.jar"/>
+	<classpathentry kind="output" path="target/classes"/>
 </classpath>

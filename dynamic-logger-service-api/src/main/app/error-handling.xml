@@ -57,14 +57,6 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
             <set-property propertyName="http.status" value="#[payload.errors[0].errorCode]" mimeType="application/java" doc:name="Set HttpStatus"/>
             <json:object-to-json-transformer doc:name="Object to JSON"/>
 		</catch-exception-strategy>
-		
-		
-		<catch-exception-strategy when="#[exception.causedBy(org.mule.modules.dynamicloglevel.exception.DynamicLogLevelException)]" doc:name="Caused By (org.mule.modules.dynamicloglevel.exception.DynamicLogLevelException)" enableNotifications="false" logException="false">
-            <set-property propertyName="http.status" value="404" mimeType="application/java" doc:name="Set Http Status"/>
-            <set-variable variableName="errorDescription" value="#[exception.cause.message]" doc:name="Set Error Description"/>
-            <set-payload value="#[404]" doc:name="Set Error Code"/>
-			<flow-ref name="global-prepare-error-response-sub-flow" doc:name="global-prepare-error-response-sub-flow" />
-		</catch-exception-strategy>
 		<catch-exception-strategy doc:name="Default">
 			<set-variable variableName="errorMessage" value="Unable to fullfil request due to internal error." doc:name="Set Error Message" />
 			<flow-ref name="global-internal-server-error-response-sub-flow" doc:name="Internal Server Response" />

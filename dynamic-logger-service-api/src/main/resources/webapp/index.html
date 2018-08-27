@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dynamic Logger Admin</title>
+
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+    <script src="bootstrap/js/jquery.min.js"></script>
+    <script src="bootstrap/js/bootstrap.js"></script>
+    <script src="bootstrap/js/angular.min.js"></script>
+
+    <script src="dynamic-logger.js"></script>
+
+</head>
+<body ng-app="DynamicLoggerApp">
+<div id="wrapper">
+    <div class="bs-component">
+        <nav class="navbar navbar-inverse navbar-expand-lg navbar-dark bg-primary">
+            <h2 style="text-align: center">Dynamic Logger Controller Admin</h2>
+            </div>
+        </nav>
+    <div>
+    <div>
+        <div class="container" ng-controller="DynamicLoggerController">
+					<div class="alert alert-danger fade in alert-dismissible" ng-if = "isError">
+						<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+						<strong>Error! </strong>{{errorMessage}}
+					</div>
+
+					<div class="row">
+                <div class="col-lg-112">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                        
+                            <p ng-if="!loading"><h4>{{loggers.length}} loggers available</h4></p>
+                            <input class="form-control" type="text" placeholder="Search logs" aria-label="Search"
+                                   ng-model="loggerFilter">
+
+                        </div>
+                        <div class="panel-body">
+                            <table width="100%" class="table table-striped table-bordered table-hover">
+                                <thead>
+                                <tr>
+                                    <th>Application Name</th>
+                                    <th>Logger Name</th>
+                                    <th>Level</th>
+                                </tr>
+
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="logger in loggers | filter:loggerFilter">
+
+                                    <td>{{logger.applicationName}}</td>
+                                    <td>{{logger.name}}</td>
+                                    <td>
+                                        <button ng-click = "changeLevel(logger.applicationName, logger.name, 'TRACE')" ng-class="(logger.level == 'TRACE'? 'btn btn-primary': 'btn btn-default')" class="btn btn-sm"> TRACE</button>
+                                        <button ng-click = "changeLevel(logger.applicationName, logger.name, 'DEBUG')"  ng-class="(logger.level == 'DEBUG'? 'btn btn-success': 'btn btn-default')" class="btn btn-sm"> DEBUG</button>
+                                        <button ng-click = "changeLevel(logger.applicationName, logger.name, 'INFO')" ng-class="(logger.level == 'INFO'? 'btn btn-info': 'btn btn-default')" class="btn btn-sm"> INFO</button>
+                                        <button ng-click = "changeLevel(logger.applicationName, logger.name, 'WARN')" ng-class="(logger.level == 'WARN'? 'btn btn-warning': 'btn btn-default')" class="btn btn-sm"> WARN</button>
+                                        <button ng-click = "changeLevel(logger.applicationName, logger.name, 'ERROR')" ng-class="(logger.level == 'ERROR'? 'btn btn-danger': 'btn btn-default')" class="btn btn-sm"> ERROR</button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

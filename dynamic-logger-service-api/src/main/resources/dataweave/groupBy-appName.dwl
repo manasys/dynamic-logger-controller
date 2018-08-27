@@ -4,5 +4,8 @@
 ---
 {
 	host: flowVars.host,
-	loggers: (payload default [] groupBy $.appName) unless payload == null otherwise []
+	applications: payload default [] map (logger) -> {
+		appName: logger.appName,
+		loggers:logger.loggers
+	}
 }

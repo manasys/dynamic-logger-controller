@@ -1,37 +1,35 @@
 #%RAML 1.0
-title: Dynamic Logger Controller API
+title: Dynamic Logger Controller
 version: 1.0
 mediaType: [application/json]
 baseUri: http://localhost:8081
 types:
   LoggerType: !include types/LogLevelType.raml
+  UpdateMultiApp: !include types/UpdateMultiApps.raml
+  LoggerConfig: !include types/LoggerConfig.raml
 
 /loggers:
-    get:
-      description: |
-        Retrieve resource
+    get:     
       responses:
-        200:
-          description: |
-            Succesfully retrieved resource
+        200:       
           body:
             application/json:
-              type: LoggerType []
-              example: !include Array-Example.json
+              type: LoggerType
+              example : !include examples/LogLevelExample.raml
     put:
       description: |
         Update log levels for application in given collection
       body:
         application/json:
-          type: LoggerType []
-          example: !include Array-Example.json
-
+          type: UpdateMultiApp[]
+          example : !include examples/LogLevelUpdateMultiApps.raml
       responses:
         200:
           description: |
             Succesfully updated the resource
-          body: 
-            application/json:  
+          body:
+            application/json: 
+
     /{appName}:
       uriParameters:
         appName:
@@ -44,19 +42,17 @@ types:
             body:
               application/json:
                 type: LoggerType
-                example: !include LogLevelExample.raml
-
-
+                example : !include examples/LogLevelExample.raml
       put:
         description: |
           Update specific log level for given application name
         body:
           application/json:
-            type: LoggerType
-            example: !include LogLevelExample.raml
+            type: LoggerConfig[]
+            example : !include examples/LogLevelUpdateOneApp.raml
         responses:
           200:
             body:
               application/json:
                 type: LoggerType
-                example: !include LogLevelExample.raml
+                example : !include examples/LogLevelExample.raml

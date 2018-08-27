@@ -3,10 +3,10 @@ type: object
 properties:
   host?:
     description: Name of the host
-  application?:
+  applications:
     description: Name of the application to update log level in
-    type: string
-  loggers:
-    description: Loggers in specific app
     type: array
-    items: !include LoggerConfig.raml
+    items: 
+      type: !include AppLogs.raml
+     
+
