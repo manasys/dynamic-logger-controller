@@ -1,5 +1,8 @@
-var baseURI = "http://localhost:8081/api"
+var baseURL = ""
+var basePath= "/api"
 angular.module('DynamicLoggerApp', []).controller('DynamicLoggerController',function($scope, $http) {
+    		baseURL = location.protocol + "//" + location.host + basePath;
+    		console.info("baseURL " , baseURL)
 			$scope.isError=false;
 			$scope.loading = true;
 			fetchAllLoggers($scope, $http);
@@ -10,7 +13,7 @@ angular.module('DynamicLoggerApp', []).controller('DynamicLoggerController',func
 					name : logger,
 					level : level
 				})
-				var putUrl = baseURI + "/loggers/" + appName
+				var putUrl = baseURL + "/loggers/" + appName
 				console.info("Put URL ", putUrl, " putData ", JSON.stringify(putData))
 				$http.put(putUrl, putData).then(function(response) {
 					fetchAllLoggers($scope, $http);
@@ -24,7 +27,7 @@ angular.module('DynamicLoggerApp', []).controller('DynamicLoggerController',func
 			}
 		});
 function fetchAllLoggers($scope, $http) {
-	$http.get(baseURI + "/loggers").then(function(response) {
+	$http.get(baseURL + "/loggers").then(function(response) {
 		console.debug("Http success", JSON.stringify(response.data))
 		$scope.loggers = sortResult(response.data)
 	},
