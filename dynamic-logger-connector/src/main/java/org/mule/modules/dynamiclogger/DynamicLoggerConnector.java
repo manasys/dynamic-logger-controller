@@ -2,11 +2,16 @@ package org.mule.modules.dynamiclogger;
 
 import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.apache.logging.log4j.core.jmx.LoggerConfigAdmin;
 import org.apache.logging.log4j.core.jmx.LoggerConfigAdminMBean;
 import org.mule.api.MuleMessage;
 import org.mule.api.annotations.Config;
 import org.mule.api.annotations.Connector;
 import org.mule.api.annotations.Processor;
+import org.mule.api.annotations.lifecycle.Start;
 import org.mule.api.annotations.param.Default;
 import org.mule.modules.dynamiclogger.exception.DynamicLoggerException;
 import org.mule.modules.dynamiclogger.model.DynamicLogger;
@@ -28,9 +33,39 @@ import java.util.Set;
 public class DynamicLoggerConnector {
     private Logger logger = LoggerFactory.getLogger(DynamicLoggerConnector.class);
 
+    boolean initialized = false;
+    MBeanServer mBeanServer = null;
+
+    @Start
+    public void setUp() {
+        if (initialized) {
+            return;
+        }
+        mBeanServer = ManagementFactory.getPlatformMBeanServer();
+        initialized = true;
+    }
 
     @Config
     private DynamicLoggerConnector config;
+
+    @Processor
+    public void addLogger(@Default("DEBUG") String level, @Default("org.mule.module.http.internal.HttpMessageLogger") String loggerName, String appName) throws Exception {
+        String searchPattern = String.format(LoggerConfigAdminMBean.PATTERN, appName, "*");
+        logger.info("Search Pattern [ {} ]", searchPattern);
+        Set<ObjectName> searchResult = findByPattern(searchPattern);
+        if (searchResult.isEmpty()) {
+            throw new DynamicLoggerException("No app found  with name  [ " + appName + " ]");
+        }
+        searchPattern = String.format(LoggerConfigAdminMBean.PATTERN, appName, loggerName);
+
+        ObjectName toAddLogger = new ObjectName(searchPattern);
+        LoggerContext loggerContext = new LoggerContext(appName);
+        LoggerConfig loggerConfig = new LoggerConfig(loggerName, Level.valueOf(level), true);
+        LoggerConfigAdminMBean mBean = new LoggerConfigAdmin(loggerContext, loggerConfig);
+        logger.info("Logger to add {} ", searchPattern);
+        mBeanServer.registerMBean(mBean, toAddLogger);
+
+    }
 
     @Processor
     public void updateLogLevel(@Default("DEBUG") String level, @Default("org.mule.module.http.internal.HttpMessageLogger") String loggerName, String appName) throws DynamicLoggerException {
@@ -55,9 +90,8 @@ public class DynamicLoggerConnector {
     public void ListLogsByAppName(String appName, MuleMessage muleMessage) throws Exception {
         logger.info("Find Loggers for appName {}", appName);
         String searchPattern = String.format(LoggerConfigAdminMBean.PATTERN, appName, "*");
-        List<DynamicLogger> result = new ArrayList<>();
         List<DynamicLogger> dynamicLoggers = findAndCreateResult(searchPattern);
-        muleMessage.setPayload(result, new SimpleDataType<List<DynamicLogger>>(List.class, "application/java"));
+        muleMessage.setPayload(dynamicLoggers, new SimpleDataType<List<DynamicLogger>>(List.class, "application/java"));
 
     }
 
@@ -69,10 +103,9 @@ public class DynamicLoggerConnector {
     }
 
     private LoggerConfigAdminMBean findLoggerByAppAndLoggerName(String searchPattern) throws Exception {
-        MBeanServer platformMBeanServer = ManagementFactory.getPlatformMBeanServer();
         logger.info("Search Pattern [ {} ]", searchPattern);
         ObjectName searchObjectName = new ObjectName(searchPattern);
-        LoggerConfigAdminMBean loggerContextAdmin = getLoggerConfigAdminBean(searchObjectName, platformMBeanServer);
+        LoggerConfigAdminMBean loggerContextAdmin = getLoggerConfigAdminBean(searchObjectName);
         if (logger.isDebugEnabled()) {
             logger.debug("LoggerConfigAdminMBean ---- {}", loggerContextAdmin);
         }
@@ -81,9 +114,9 @@ public class DynamicLoggerConnector {
 
     private List<DynamicLogger> findAndCreateResult(String searchPattern) throws Exception {
         logger.info("Search Pattern [ {} ]", searchPattern);
-        MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
-        final Set<ObjectName> contextNames = findByPattern(searchPattern, mBeanServer);
-        MultiValueMap multiMap = createLogLevelResult(contextNames, mBeanServer);
+
+        final Set<ObjectName> contextNames = findByPattern(searchPattern);
+        MultiValueMap multiMap = createLogLevelResult(contextNames);
         List<DynamicLogger> result = new ArrayList<>();
         Set<String> appNames = multiMap.keySet();
         for (String appnName : appNames) {
@@ -98,7 +131,7 @@ public class DynamicLoggerConnector {
 
     }
 
-    private MultiValueMap createLogLevelResult(Set<ObjectName> contextNames, MBeanServer mBeanServer) {
+    private MultiValueMap createLogLevelResult(Set<ObjectName> contextNames) {
         MultiValueMap multiValueMap = new MultiValueMap();
         for (final ObjectName contextName : contextNames) {
             String name = contextName.getKeyProperty("name");
@@ -107,20 +140,20 @@ public class DynamicLoggerConnector {
                 if (logger.isDebugEnabled()) {
                     logger.debug("ObjectName {}", contextName.getCanonicalKeyPropertyListString());
                 }
-                LoggerConfigAdminMBean loggerConfigAdminMBean = getLoggerConfigAdminBean(contextName, mBeanServer);
+                LoggerConfigAdminMBean loggerConfigAdminMBean = getLoggerConfigAdminBean(contextName);
                 multiValueMap.put(type, loggerConfigAdminMBean);
             }
         }
         return multiValueMap;
     }
 
-    private LoggerConfigAdminMBean getLoggerConfigAdminBean(final ObjectName name, MBeanServer mBeanServer) {
+    private LoggerConfigAdminMBean getLoggerConfigAdminBean(final ObjectName name) {
         return JMX.newMBeanProxy(mBeanServer,
                 name,
                 LoggerConfigAdminMBean.class, false);
     }
 
-    private Set<ObjectName> findByPattern(final String pattern, MBeanServer mBeanServer) throws JMException {
+    private Set<ObjectName> findByPattern(final String pattern) throws JMException {
         final ObjectName searchQuery = new ObjectName(pattern);
         return mBeanServer.queryNames(searchQuery, null);
 

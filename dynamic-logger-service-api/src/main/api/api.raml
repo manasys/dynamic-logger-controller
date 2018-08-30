@@ -56,3 +56,16 @@ types:
               application/json:
                 type: LoggerType
                 example : !include examples/LogLevelExample.raml
+      post:
+        description: |
+          Add new logger to an existing appliction
+        body:
+          application/json:
+            type: LoggerConfig[]
+            example : !include examples/LogLevelUpdateOneApp.raml
+        responses:
+          200:
+            body:
+              application/json:
+                type: LoggerType
+                example : !include examples/LogLevelExample.raml                

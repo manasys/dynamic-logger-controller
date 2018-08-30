@@ -5,5 +5,5 @@
 	appName: flowVars.appName,
 	logger: flowVars.logName,
 	level : flowVars.level,
-	status: "updated successfully"
+	status: "Added successfully"
 }

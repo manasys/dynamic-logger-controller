@@ -7,8 +7,9 @@
 	<classpathentry kind="src" output="target/test-classes" path="src/test/java"/>
 	<classpathentry excluding="**/*.java" kind="src" output="target/test-classes" path="src/test/resources"/>
 	<classpathentry kind="con" path="MULE_RUNTIME"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.launching.macosx.MacOSXType/Java SE 8 [1.8.0_111]"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="var" path="M2_REPO/org/mule/modules/dynamic-logger-connector/1.0.0-SNAPSHOT/dynamic-logger-connector-1.0.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/mule/modules/dynamic-logger-connector/1.0.0-SNAPSHOT/dynamic-logger-connector-1.0.0-SNAPSHOT-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/mule/tools/devkit/mule-devkit-shade/3.9.0/mule-devkit-shade-3.9.0.jar"/>
+	<classpathentry kind="con" path="MULE_LIB/Dynamic Logger Controller/org.mule.tooling.ui.contribution.dynamic-logger-controller.3.5.0"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

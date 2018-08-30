@@ -58,7 +58,7 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
             <json:object-to-json-transformer doc:name="Object to JSON"/>
 		</catch-exception-strategy>
 		<catch-exception-strategy doc:name="Default">
-			<set-variable variableName="errorMessage" value="Unable to fullfil request due to internal error." doc:name="Set Error Message" />
+			<set-variable variableName="errorMessage" value="#[exception.getCause()]" doc:name="Set Error Message" />
 			<flow-ref name="global-internal-server-error-response-sub-flow" doc:name="Internal Server Response" />
 		</catch-exception-strategy>
 	</choice-exception-strategy>

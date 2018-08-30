@@ -29,6 +29,83 @@
 					</div>
 
 					<div class="row">
+					 <!-- Add New Logger !-->
+                <!-- Button trigger modal -->
+                <button type="button"  class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                    <i class="fa fa-plus fa-lg" aria-hidden="true"></i> Add New Logger
+
+                </button>
+
+                <!-- Modal -->
+                <div  class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title "  id="add-new-logger-modal">Add New Logger</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body" >
+
+                                <table id="myTable" class=" table order-list">
+                                    <thead>
+                                    <tr>
+                                    <tr>
+                                        <th>Application Name</th>
+                                        <th>Logger Name</th>
+                                        <th>Level</th>
+                                    </tr>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td class="col-sm-4">
+                                            <div class="form-group">
+
+                                                <select  class="form-control" ng-model="selectedApp">
+                                                    <option  ng-repeat="application in applications" value="{{application.appName}}">{{application.appName}}</option>
+                                                </select>
+
+
+                                            </div>
+
+                                        </td>
+                                        <td class="col-sm-6">
+                                            <input type="text" placeholder="org.mule.module.http.internal.HttpMessageLogger" ng-required="true" ng-model="toAddLoggerName" class="form-control"/>
+                                        </td>
+                                        <td class="col-sm-4">
+                                            <div class="form-group">
+
+                                                <select class="form-control" ng-model="selectedLevel">
+                                                 <option  ng-repeat="_level in loggerLevels" value="{{_level}}">{{_level}}</option>
+                                                </select>
+                                            </div>
+
+                                        </td>
+
+                                    </tr>
+                                    </tbody>
+                                    <tfoot>
+                                    <!--<tr>
+                                        <td colspan="5" style="text-align: left;">
+                                            <input type="button" class="btn btn-lg btn-block " id="addrow" value="Add Row" />
+                                        </td>
+                                    </tr>-->
+                                    <tr>
+                                    </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" ng-click ="addNewLogger(selectedApp,toAddLoggerName,selectedLevel )" data-dismiss="modal">Add Logger</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add New Logger Ends !-->
                 <div class="col-lg-112">
                     <div class="panel panel-default">
                         <div class="panel-heading">
