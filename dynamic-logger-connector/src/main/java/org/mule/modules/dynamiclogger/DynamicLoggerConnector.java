@@ -13,6 +13,7 @@ import org.mule.api.annotations.Connector;
 import org.mule.api.annotations.Processor;
 import org.mule.api.annotations.lifecycle.Start;
 import org.mule.api.annotations.param.Default;
+import org.mule.modules.dynamiclogger.config.DynamicLoggerConfig;
 import org.mule.modules.dynamiclogger.exception.DynamicLoggerException;
 import org.mule.modules.dynamiclogger.model.DynamicLogger;
 import org.mule.modules.dynamiclogger.utils.DynamicLoggerUtils;
@@ -46,7 +47,7 @@ public class DynamicLoggerConnector {
     }
 
     @Config
-    private DynamicLoggerConnector config;
+    private DynamicLoggerConfig config;
 
     @Processor
     public void addLogger(@Default("DEBUG") String level, @Default("org.mule.module.http.internal.HttpMessageLogger") String loggerName, String appName) throws Exception {
@@ -159,11 +160,11 @@ public class DynamicLoggerConnector {
 
     }
 
-    public DynamicLoggerConnector getConfig() {
+    public DynamicLoggerConfig getConfig() {
         return config;
     }
 
-    public void setConfig(DynamicLoggerConnector config) {
+    public void setConfig(DynamicLoggerConfig config) {
         this.config = config;
     }
 }

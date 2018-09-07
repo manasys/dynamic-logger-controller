@@ -11,6 +11,7 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
     <http:listener-config name="api-httpListenerConfig" host="0.0.0.0" port="8081" doc:name="HTTP Listener Configuration" />
     <apikit:config name="api-config" raml="api.raml" consoleEnabled="false" doc:name="Router" />
     <http:request-config name="HTTP_Request_Configuration" host="#[payload.connection.domain]" port="#[payload.connection.port]" basePath="#[payload.connection.basePath]" doc:name="HTTP Request Configuration" />
+    <dynamic-logger-controller:config name="DynamicLoggerController" doc:name="Dynamic Logger Controller: Dynamic Logger Controller Config"/>
     <flow name="api-main">
         <http:listener config-ref="api-httpListenerConfig" path="/api/*" doc:name="HTTP" />
         <apikit:router config-ref="api-config" doc:name="APIkit Router" />
@@ -61,7 +62,7 @@ payload]]></dw:set-payload>
     </flow>
     <flow name="get:/loggers:api-config">
         <logger message="Fetching All Loggers on JVM" level="INFO" doc:name="Log List All Loggers" />
-        <dynamic-logger-controller:list-all-logs doc:name="List All Logs" />
+        <dynamic-logger-controller:list-all-logs doc:name="List All Logs" config-ref="DynamicLoggerController"/>
         <set-variable variableName="host" value="#[server.host]" doc:name="Set Host Name" />
         <dw:transform-message doc:name="Response">
             <dw:set-payload resource="classpath:dataweave/groupBy-appName.dwl" />
@@ -69,7 +70,7 @@ payload]]></dw:set-payload>
     </flow>
     <flow name="get:/loggers/{appName}:api-config">
         <logger message="Finding Loggers for App Name #[flowVars.appName]" level="INFO" doc:name="Log App Name" />
-        <dynamic-logger-controller:list-logs-by-app-name appName="#[flowVars.appName]" doc:name="find Logs By AppName" />
+        <dynamic-logger-controller:list-logs-by-app-name appName="#[flowVars.appName]" doc:name="find Logs By AppName" config-ref="DynamicLoggerController"/>
         <set-variable variableName="host" value="#[server.host]" doc:name="Set Host Name" />
         <dw:transform-message doc:name="Response">
             <dw:set-payload resource="classpath:dataweave/groupBy-appName.dwl" />
@@ -92,7 +93,7 @@ payload]]></dw:set-payload>
     </flow>
     <flow name="Add-Logger-Flow">
         <logger message="Adding logger #[payload]" level="INFO" doc:name="Add Logger"/>
-        <dynamic-logger-controller:add-logger appName="#[flowVars.appName]" level="#[flowVars.level]" loggerName="#[flowVars.logName]" doc:name="Add Logger "/>
+        <dynamic-logger-controller:add-logger appName="#[flowVars.appName]" level="#[flowVars.level]" loggerName="#[flowVars.logName]" doc:name="Add Logger " config-ref="DynamicLoggerController"/>
         <dw:transform-message doc:name="Logger Response">
             <dw:set-payload resource="classpath:dataweave/update-success-response.dwl"/>
         </dw:transform-message>
@@ -106,7 +107,7 @@ payload]]></dw:set-payload>
     </flow>
     <flow name="update-log-level-flow">
         <logger message="Updaing logger #[flowVars.logName], level #[flowVars.level]" level="INFO" doc:name="Log Update Keys" />
-        <dynamic-logger-controller:update-log-level appName="#[flowVars.appName]" level="#[flowVars.level]" loggerName="#[flowVars.logName]" doc:name="Update Log Level" />
+        <dynamic-logger-controller:update-log-level appName="#[flowVars.appName]" level="#[flowVars.level]" loggerName="#[flowVars.logName]" doc:name="Update Log Level" config-ref="DynamicLoggerController"/>
         <dw:transform-message doc:name="Success Response">
             <dw:set-payload resource="classpath:dataweave/update-success-response.dwl" />
         </dw:transform-message>
