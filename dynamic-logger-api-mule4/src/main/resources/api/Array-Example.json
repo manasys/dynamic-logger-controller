@@ -1,0 +1,26 @@
+[{
+  "application": "My Application",
+  "loggers": [
+    {
+      "name": "org.mule.module.http.internal.HttpMessageLogger",
+      "level": "WARN"
+    },
+    {
+      "name": "org.apache.cxf",
+      "level": "WARN"
+    }
+  ]
+},
+{
+  "application": "Second Application",
+  "loggers": [
+    {
+      "name": "org.mule.module.http.internal.HttpMessageLogger",
+      "level": "WARN"
+    },
+    {
+      "name": "org.apache.cxf",
+      "level": "WARN"
+    }
+  ]
+}]

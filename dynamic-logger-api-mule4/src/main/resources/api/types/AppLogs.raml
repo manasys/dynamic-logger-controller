@@ -1,0 +1,9 @@
+#%RAML 1.0 DataType
+type: object
+properties:
+  appName:
+    type: string
+    description: Name of the application
+  loggers?:
+    type: array
+    items: !include LoggerConfig.raml

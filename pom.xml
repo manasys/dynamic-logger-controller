@@ -10,7 +10,9 @@
 
     <modules>
     <module>dynamic-logger-connector</module>
+		<module>mule4-connector</module>
     <module>dynamic-logger-service-api</module>
-    </modules>
+    <module>dynamic-logger-api-mule4</module>
+	</modules>
 
 </project>

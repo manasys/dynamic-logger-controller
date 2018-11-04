@@ -1,0 +1,21 @@
+#%RAML 1.0 NamedExample
+host: localhost
+applications: 
+  - 
+    appName: First App
+    loggers:
+      -
+        name: org.mule.module.http.internal.HttpMessageLogger
+        level: DEBUG
+      -
+        name: org.apache.cxf
+        level: WARN    
+  -
+    appName: Second App
+    loggers:
+      -
+        name: org.mule.module.http.internal.HttpMessageLogger
+        level: DEBUG
+      -
+        name: org.apache.cxf
+        level: WARN 

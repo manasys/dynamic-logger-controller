@@ -1,0 +1,19 @@
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:mule4-dynamic-logger-controller="http://www.mulesoft.org/schema/mule/mule4-dynamic-logger-controller"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+          http://www.mulesoft.org/schema/mule/mule4-dynamic-logger-controller http://www.mulesoft.org/schema/mule/mule4-dynamic-logger-controller/current/mule-mule4-dynamic-logger-controller.xsd">
+
+    <mule4-dynamic-logger-controller:config name="config" configId="configId">
+        <mule4-dynamic-logger-controller:connection requiredParameter="aValue" />
+    </mule4-dynamic-logger-controller:config>
+
+    <flow name="sayHiFlow">
+        <mule4-dynamic-logger-controller:say-hi person="Mariano Gonzalez"/>
+    </flow>
+
+    <flow name="retrieveInfoFlow">
+        <mule4-dynamic-logger-controller:retrieve-info config-ref="config"/>
+    </flow>
+
+</mule>
