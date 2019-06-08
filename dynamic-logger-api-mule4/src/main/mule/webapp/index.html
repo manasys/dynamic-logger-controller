@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dynamic Logger Admin</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script  src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.5/angular.min.js"></script>
+    <script src = "https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.5/angular.min.js.map"></script>
+<!--     <script src="webapp/bootstrap/js/bootstrap.js"></script>
+    <script src="webapp/bootstrap/js/angular.min.js"></script>
+ -->
+    <script src="webapp/dynamic-logger.js"></script>
+
+</head>
+<body ng-app="DynamicLoggerApp">
+<div id="wrapper">
+    <div class="bs-component">
+        <nav class="navbar navbar-inverse navbar-expand-lg navbar-dark bg-primary">
+            <h2 style="text-align: center">Dynamic Logger Controller Admin</h2>
+            </div>
+        </nav>
+    <div>
+    <div>
+        <div class="container" ng-controller="DynamicLoggerController">
+					<div class="alert alert-danger fade in alert-dismissible" ng-if = "isError">
+						<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+						<strong>Error! </strong>{{errorMessage}}
+					</div>
+
+					<div class="row">
+					 <!-- Add New Logger !-->
+                <!-- Button trigger modal -->
+          <!--       <button type="button"  class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                    <i class="fa fa-plus fa-lg" aria-hidden="true"></i> Add New Logger
+
+                </button> -->
+
+                <!-- Modal -->
+                <div  class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title "  id="add-new-logger-modal">Add New Logger</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body" >
+
+                                <table id="myTable" class=" table order-list">
+                                    <thead>
+                                    <tr>
+                                    <tr>
+                                        <th>Application Name</th>
+                                        <th>Logger Name</th>
+                                        <th>Level</th>
+                                    </tr>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td class="col-sm-4">
+                                            <div class="form-group">
+
+                                                <select  class="form-control" ng-model="selectedApp">
+                                                    <option  ng-repeat="application in applications" value="{{application.appName}}">{{application.appName}}</option>
+                                                </select>
+
+
+                                            </div>
+
+                                        </td>
+                                        <td class="col-sm-6">
+                                            <input type="text" placeholder="org.mule.module.http.internal.HttpMessageLogger" ng-required="true" ng-model="toAddLoggerName" class="form-control"/>
+                                        </td>
+                                        <td class="col-sm-4">
+                                            <div class="form-group">
+
+                                                <select class="form-control" ng-model="selectedLevel">
+                                                 <option  ng-repeat="_level in loggerLevels" value="{{_level}}">{{_level}}</option>
+                                                </select>
+                                            </div>
+
+                                        </td>
+
+                                    </tr>
+                                    </tbody>
+                                    <tfoot>
+                                    <!--<tr>
+                                        <td colspan="5" style="text-align: left;">
+                                            <input type="button" class="btn btn-lg btn-block " id="addrow" value="Add Row" />
+                                        </td>
+                                    </tr>-->
+                                    <tr>
+                                    </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" ng-click ="addNewLogger(selectedApp,toAddLoggerName,selectedLevel )" data-dismiss="modal">Add Logger</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add New Logger Ends !-->
+                <div class="col-lg-112">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                        
+                            <p ng-if="!loading"><h4>{{loggers.length}} loggers available</h4></p>
+                            <input class="form-control" type="text" placeholder="Search logs" aria-label="Search"
+                                   ng-model="loggerFilter">
+
+                        </div>
+                        <div class="panel-body">
+                            <table width="100%" class="table table-striped table-bordered table-hover">
+                                <thead>
+                                <tr>
+                                    <th>Application Name</th>
+                                    <th>Logger Name</th>
+                                    <th>Level</th>
+                                </tr>
+
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="logger in loggers | filter:loggerFilter">
+
+                                    <td>{{logger.applicationName}}</td>
+                                    <td>{{logger.name}}</td>
+                                    <td>
+                                        <button ng-click = "changeLevel(logger.actualName, logger.name, 'TRACE')" ng-class="(logger.level == 'TRACE'? 'btn btn-primary': 'btn btn-default')" class="btn btn-sm"> TRACE</button>
+                                        <button ng-click = "changeLevel(logger.actualName, logger.name, 'DEBUG')"  ng-class="(logger.level == 'DEBUG'? 'btn btn-success': 'btn btn-default')" class="btn btn-sm"> DEBUG</button>
+                                        <button ng-click = "changeLevel(logger.actualName, logger.name, 'INFO')" ng-class="(logger.level == 'INFO'? 'btn btn-info': 'btn btn-default')" class="btn btn-sm"> INFO</button>
+                                        <button ng-click = "changeLevel(logger.actualName, logger.name, 'WARN')" ng-class="(logger.level == 'WARN'? 'btn btn-warning': 'btn btn-default')" class="btn btn-sm"> WARN</button>
+                                        <button ng-click = "changeLevel(logger.actualName, logger.name, 'ERROR')" ng-class="(logger.level == 'ERROR'? 'btn btn-danger': 'btn btn-default')" class="btn btn-sm"> ERROR</button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

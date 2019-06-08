@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<flow name="web-adminFlow" doc:id="f376dbc8-8fdb-46e2-8c78-be70c6865b4a" >
+		<http:listener doc:name="Listener" doc:id="507b6052-ad2a-4299-94ba-4542f513810d" config-ref="api-httpListenerConfig" path="/admin/*"/>
+		<http:load-static-resource doc:name="Load static resource" doc:id="47e49ccd-45d9-43d4-8a6c-50b83117345a" resourceBasePath="${app.home}/webapp"/>
+	</flow>
+	<flow name="web-adminFlow2" doc:id="71376867-ac1d-4c71-9f26-fb9d91b9ca6c" >
+		<logger level="INFO" doc:name="Logger" doc:id="d8b42672-595b-4f5a-a6f4-a97651a3c122" message="#[attributes.headers['X-AGW-aud']]"/>
+	</flow>
+	<flow name="web-adminFlow1" doc:id="81334880-1013-4d14-abbc-0943e24b8519" >
+		<http:listener doc:name="Listener" doc:id="1e3d9bde-aa95-4c2b-b50d-f5ab0ab76baf" config-ref="api-httpListenerConfig" path="/webapp/*"/>
+		<set-variable value="${app.home} " doc:name="Set Variable" doc:id="8c04745a-c947-434d-b949-6e2efecf25a5" variableName="app-home"/>
+		<file:read doc:name="Read" doc:id="659bb785-3ce2-4790-a048-74934a8ec5a0" path='#[vars."app-home"  ++  attributes.relativePath]'/>
+	</flow>
+</mule>
